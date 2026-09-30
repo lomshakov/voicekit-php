@@ -4,6 +4,10 @@ name: Publish to Packagist
 # from tags. This workflow validates the tag, runs the suite and asks Packagist
 # to re-read the repository. The first registration is done once by hand —
 # see docs/sdk-publishing.md.
+#
+# It can also be started by hand (Actions -> Publish to Packagist -> Run workflow)
+# to re-trigger a Packagist re-read without cutting a new release; in that case
+# the tag-specific steps are skipped.
 on:
   push:
     tags:
@@ -28,6 +32,7 @@ jobs:
           tools: composer:v2
 
       - name: Validate the tag
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           if ! printf '%s' "${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
             echo "Tag ${GITHUB_REF_NAME} is not a semver version (expected vX.Y.Z)."
@@ -58,9 +63,10 @@ jobs:
             -H 'Content-Type: application/json' \
             -d "{\"repository\":{\"url\":\"https://github.com/${GITHUB_REPOSITORY}\"}}" >/dev/null
 
-          echo "Packagist update triggered for ${GITHUB_REF_NAME}."
+          echo "Packagist update triggered (ref ${GITHUB_REF_NAME})."
 
       - name: Create the GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
