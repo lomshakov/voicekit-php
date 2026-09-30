@@ -1,0 +1,8 @@
+# Export-only packaging rules: keep tests and CI metadata out of `dist` builds.
+/tests export-ignore
+/examples export-ignore
+/.github export-ignore
+/phpunit.xml.dist export-ignore
+/phpstan.neon.dist export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore

@@ -1,0 +1,71 @@
+{
+    "name": "lomshakov/voicekit-client",
+    "description": "Official PHP SDK for VoiceKit — Russian speech synthesis (TTS), transcription (STT) with diarization, voice cloning, voice biometrics, audio/video effects, call QA, semantic search and batch jobs.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "voicekit",
+        "tts",
+        "text-to-speech",
+        "synthesis",
+        "stt",
+        "speech-to-text",
+        "transcription",
+        "diarization",
+        "voice-cloning",
+        "voice-biometrics",
+        "russian",
+        "speech",
+        "audio",
+        "api",
+        "sdk"
+    ],
+    "homepage": "https://ttsapi.ru",
+    "authors": [
+        {
+            "name": "VoiceKit",
+            "homepage": "https://ttsapi.ru"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lomshakov/voicekit-php/issues",
+        "source": "https://github.com/lomshakov/voicekit-php",
+        "docs": "https://ttsapi.ru/docs"
+    },
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5 || ^11.5"
+    },
+    "suggest": {
+        "ext-curl": "Faster, more robust HTTP transport; the SDK falls back to PHP streams when curl is unavailable.",
+        "ext-openssl": "Required for wss:// streaming (WebSocket) sessions."
+    },
+    "autoload": {
+        "psr-4": {
+            "VoiceKit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "VoiceKit\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=1G --no-progress"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.4-dev"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

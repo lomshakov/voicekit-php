@@ -1,0 +1,17 @@
+/vendor/
+/composer.lock
+/.phpunit.cache/
+/.phpstan.cache/
+/.php-cs-fixer.cache
+/build/
+coverage/
+*.cache
+
+# IDE / user settings
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
