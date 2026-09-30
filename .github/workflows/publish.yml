@@ -1,0 +1,66 @@
+name: Publish to Packagist
+
+# Packagist has no upload API: it mirrors a git repository and derives versions
+# from tags. This workflow validates the tag, runs the suite and asks Packagist
+# to re-read the repository. The first registration is done once by hand —
+# see docs/sdk-publishing.md.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate the tag
+        run: |
+          if ! printf '%s' "${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "Tag ${GITHUB_REF_NAME} is not a semver version (expected vX.Y.Z)."
+            exit 1
+          fi
+
+      - name: Validate the manifest
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Test
+        run: vendor/bin/phpunit --testsuite unit
+
+      - name: Trigger the Packagist update
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+        run: |
+          if [ -z "${PACKAGIST_USERNAME}" ] || [ -z "${PACKAGIST_TOKEN}" ]; then
+            echo "::warning::PACKAGIST_USERNAME / PACKAGIST_TOKEN are not set — skipping the Packagist update."
+            exit 0
+          fi
+
+          curl -fsS -X POST \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d "{\"repository\":{\"url\":\"https://github.com/${GITHUB_REPOSITORY}\"}}" >/dev/null
+
+          echo "Packagist update triggered for ${GITHUB_REF_NAME}."
+
+      - name: Create the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
