@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use VoiceKit\Concerns\AnalyzesAudio;
 use VoiceKit\Concerns\HandlesTextIntelligence;
 use VoiceKit\Concerns\ManagesAccount;
+use VoiceKit\Concerns\ManagesIntegrations;
+use VoiceKit\Concerns\ManagesMeetings;
 use VoiceKit\Concerns\ManagesBatches;
 use VoiceKit\Concerns\ManagesCallQa;
 use VoiceKit\Concerns\ManagesRecordings;
@@ -60,11 +62,13 @@ final class VoiceKitClient
     use SearchesRecordings;
     use ManagesBatches;
     use ManagesAccount;
+    use ManagesIntegrations;
+    use ManagesMeetings;
     use StreamsAudio;
 
     public const DEFAULT_BASE_URL = 'https://ttsapi.ru';
 
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.5.0';
 
     public const DEFAULT_TIMEOUT_SECONDS = 120.0;
 
@@ -257,6 +261,19 @@ final class VoiceKitClient
     public function patch(string $path, array $body = [], array $query = []): Result
     {
         return Result::fromJson($this->request('PATCH', $path, $query, self::encodeJson($body))->body);
+    }
+
+    /**
+     * A `PUT` with a JSON body.
+     *
+     * @param array<string, mixed> $body
+     * @param array<string, string> $query
+     *
+     * @throws VoiceKitError
+     */
+    public function put(string $path, array $body = [], array $query = []): Result
+    {
+        return Result::fromJson($this->request('PUT', $path, $query, self::encodeJson($body))->body);
     }
 
     /**
